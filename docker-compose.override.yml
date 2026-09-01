@@ -1,0 +1,8 @@
+# Local-dev-only override: expose the Postgres port to the host so the
+# host-side `next dev` server can reach the same database as the Docker app.
+version: "3.8"
+
+services:
+  db:
+    ports:
+      - "5432:5432"

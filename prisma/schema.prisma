@@ -1,0 +1,210 @@
+// ============================================================================
+// Events Portal — Prisma schema (PostgreSQL)
+// ============================================================================
+// Design notes:
+// - Passwords are never stored in plaintext. `passwordHash` holds an argon2id
+//   hash (see lib/auth.ts). There is no "password" field anywhere.
+// - Every write to `HousePoints` is immutable and paired with a row in
+//   `PointsAuditLog`, so the leaderboard total is always reconstructable
+//   and reviewable — nobody can silently edit history.
+// - `AuditLog` captures every authentication event and every admin mutation
+//   (event CRUD, media upload, points change, role change) with actor,
+//   action, target, timestamp and IP — but never request bodies, tokens,
+//   or password material.
+// - Enums keep role and status values out of free-text columns, which closes
+//   off a class of injection / validation bugs at the schema level.
+
+generator client {
+  provider = "prisma-client-js"
+  // "native" resolves per-machine; pinning the musl+openssl-3 target keeps
+  // the generated query engine loadable in every alpine-based Docker stage
+  // regardless of whether openssl happens to be installed there.
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN // full access: users, events, points, media, settings
+  STAFF // events + points + media, no user management
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  CANCELLED
+}
+
+enum RegistrationMode {
+  NONE // informational only
+  LINK // external registration link
+  FORM // internal registration form (RegistrationEntry rows)
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String
+  passwordHash  String // argon2id hash, never plaintext
+  role          Role     @default(STAFF)
+  isActive      Boolean  @default(true)
+  failedLogins  Int      @default(0)
+  lockedUntil   DateTime? // set after repeated failed logins (brute-force defense)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  eventsCreated   Event[]        @relation("EventCreatedBy")
+  eventsUpdated   Event[]        @relation("EventUpdatedBy")
+  pointsAwarded   PointsEntry[]  @relation("PointsAwardedBy")
+  auditLogEntries AuditLog[]
+  sessions        Session[]
+
+  @@index([email])
+}
+
+// Server-side sessions (rather than pure stateless JWT) so that an admin
+// can revoke a compromised session immediately — important for a school
+// portal where staff devices get lost or shared.
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String   @unique // SHA-256 of the session token; raw token never stored
+  csrfSecret String  // per-session CSRF secret, used to derive/validate CSRF tokens
+  userAgent String?
+  ipHash    String? // hashed, not raw IP — see lib/audit.ts
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model House {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  colorHex  String // for leaderboard bar/badge color, validated as #RRGGBB
+  createdAt DateTime @default(now())
+
+  pointsEntries PointsEntry[]
+
+  @@index([name])
+}
+
+// Every points change is its own append-only row. Current total per house
+// = SUM(delta) — see lib/points.ts. Rows are never updated or deleted from
+// the app layer; corrections are made with a new offsetting entry, which
+// keeps the leaderboard's history honest and auditable.
+model PointsEntry {
+  id          String   @id @default(cuid())
+  houseId     String
+  house       House    @relation(fields: [houseId], references: [id])
+  delta       Int // positive to add, negative to subtract; never 0
+  reason      String   @db.VarChar(280)
+  awardedById String
+  awardedBy   User     @relation("PointsAwardedBy", fields: [awardedById], references: [id])
+  createdAt   DateTime @default(now())
+
+  @@index([houseId])
+  @@index([createdAt])
+}
+
+model Event {
+  id               String            @id @default(cuid())
+  title            String            @db.VarChar(160)
+  slug             String            @unique @db.VarChar(180)
+  summary          String            @db.VarChar(300) // short description for cards
+  description      String // full HTML/markdown body, sanitized on write (see lib/sanitize.ts)
+  status           EventStatus       @default(DRAFT)
+  startsAt         DateTime
+  endsAt           DateTime?
+  location         String?           @db.VarChar(200)
+  category         String?           @db.VarChar(60) // e.g. "Athletics", "Arts", "Academic"
+  thumbnailKey     String? // S3 object key, not a public URL — signed on read
+  registrationMode RegistrationMode  @default(NONE)
+  registrationUrl  String? // used when registrationMode = LINK
+  capacity         Int? // used when registrationMode = FORM
+  createdById      String
+  createdBy        User              @relation("EventCreatedBy", fields: [createdById], references: [id])
+  updatedById      String?
+  updatedBy        User?             @relation("EventUpdatedBy", fields: [updatedById], references: [id])
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  media         EventMedia[]
+  results       EventResult[]
+  registrations RegistrationEntry[]
+
+  @@index([startsAt])
+  @@index([status])
+  @@index([category])
+}
+
+model EventMedia {
+  id        String   @id @default(cuid())
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  s3Key     String // private object key; served via short-lived signed URL
+  altText   String   @db.VarChar(200) // required for accessibility, enforced at API layer
+  mimeType  String
+  sizeBytes Int
+  width     Int?
+  height    Int?
+  createdAt DateTime @default(now())
+
+  @@index([eventId])
+}
+
+// Free-text or light structured results for past events (e.g. "1st: Alder House").
+model EventResult {
+  id        String   @id @default(cuid())
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  place     Int? // 1, 2, 3... null for non-ranked notes
+  label     String   @db.VarChar(160) // "Alder House", "U16 Girls Relay Team"
+  detail    String?  @db.VarChar(400)
+  createdAt DateTime @default(now())
+
+  @@index([eventId])
+}
+
+model RegistrationEntry {
+  id           String   @id @default(cuid())
+  eventId      String
+  event        Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  studentName  String   @db.VarChar(120)
+  studentEmail String   @db.VarChar(200)
+  guardianName String?  @db.VarChar(120)
+  notes        String?  @db.VarChar(500)
+  createdAt    DateTime @default(now())
+
+  // No unauthenticated write path bypasses this: the public form endpoint
+  // still requires CSRF token + rate limit + validation, it just doesn't
+  // require a logged-in session (see threat model, "public form abuse").
+  @@index([eventId])
+  @@unique([eventId, studentEmail])
+}
+
+// Append-only audit trail for authentication and every admin mutation.
+// Never stores request bodies, passwords, tokens, or session secrets —
+// only who, what, on which record, when, and a hashed IP for abuse
+// investigation.
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  actor      User?    @relation(fields: [actorId], references: [id])
+  action     String   @db.VarChar(60) // "LOGIN_SUCCESS", "LOGIN_FAILED", "EVENT_CREATE", "POINTS_ADJUST", ...
+  targetType String?  @db.VarChar(40) // "Event", "PointsEntry", "User", ...
+  targetId   String?
+  ipHash     String? // SHA-256(ip + pepper), never the raw IP
+  userAgent  String?
+  metadata   Json? // small structured, non-sensitive context (e.g. {"delta": 10})
+  createdAt  DateTime @default(now())
+
+  @@index([action])
+  @@index([actorId])
+  @@index([createdAt])
+}

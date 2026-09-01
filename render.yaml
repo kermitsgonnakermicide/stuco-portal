@@ -1,0 +1,70 @@
+# render.yaml — Render Blueprint for the Events Portal.
+#
+# Deploy via the Render dashboard:
+#   1. Push this repo to GitHub/GitLab.
+#   2. In Render: New -> Blueprint -> connect the repo.
+#   3. Render provisions the Postgres + Redis instances and creates the
+#      web service, wiring the generated connection strings into env vars.
+#
+# IMPORTANT secrets you MUST set once the service exists (never commit):
+#   - AUDIT_IP_PEPPER     openssl rand -base64 32
+#   - CSRF_PUBLIC_SECRET  openssl rand -base64 32
+#   - AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY (only if you use S3 uploads)
+#   - SEED_ADMIN_EMAIL (optional; default used if unset)
+#
+# After first deploy, read the one-time seed admin password from the
+# service logs (Search "Seed admin") and immediately rotate it in the
+# admin panel. On every subsequent deploy the existing admin is skipped.
+
+services:
+  - type: web
+    name: events-portal
+    runtime: node
+    plan: free # change to starter/standard for anything beyond a demo
+    rootDir: .
+    buildCommand: npm ci && npx prisma generate && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/points
+    preDeployCommand: npx prisma migrate deploy && npx tsx prisma/seed.ts
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_TELEMETRY_DISABLED
+        value: "1"
+      - key: NEXT_PUBLIC_SITE_URL
+        value: https://<your-service>.onrender.com
+      - key: AUDIT_IP_PEPPER
+        sync: false # set manually in dashboard
+      - key: CSRF_PUBLIC_SECRET
+        sync: false # set manually in dashboard
+      - key: SEED_ADMIN_EMAIL
+        sync: false
+      - key: AWS_REGION
+        value: ap-south-1
+        sync: false
+      - key: S3_MEDIA_BUCKET
+        sync: false
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: events-db
+          property: connectionString
+      - key: REDIS_URL
+        fromDatabase:
+          name: events-redis
+          property: connectionString
+
+databases:
+  - name: events-db
+    plan: free
+    databaseName: events_portal
+    ipAllowList: [] # only allow internal connections
+
+  - name: events-redis
+    plan: free
+    ipAllowList: [] # only allow internal connections
