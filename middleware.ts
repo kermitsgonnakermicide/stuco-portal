@@ -37,7 +37,7 @@ export function middleware(req: NextRequest) {
       "default-src 'self'",
       "script-src 'self' 'unsafe-inline'",
       "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' https://cdn.shivnadarschoolgurgaon.example data:",
+      "img-src 'self' https://cdn.snseventsportal.example data:",
       "font-src 'self'",
       "connect-src 'self'",
       "frame-ancestors 'none'",

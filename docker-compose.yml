@@ -3,7 +3,7 @@
 #   docker-compose up --build
 #
 # App:      http://localhost:3000
-# Login:    admin@shivnadarschoolgurgaon.example  (password printed once in
+# Login:    admin@snseventsportal.example  (password printed once in
 #           `docker-compose logs web` by the seeder — rotate on first login)
 #
 # DEMO CREDENTIALS ONLY: the values below (and any ${VAR:-default} fallback)
@@ -59,7 +59,7 @@ services:
       REDIS_URL: redis://redis:6379
       AUDIT_IP_PEPPER: ${AUDIT_IP_PEPPER:-demo-ip-pepper-change-me-0123456789abcdef}
       CSRF_PUBLIC_SECRET: ${CSRF_PUBLIC_SECRET:-demo-csrf-secret-change-me-0123456789abcdef}
-      SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-admin@shivnadarschoolgurgaon.example}
+      SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-admin@snseventsportal.example}
       AWS_REGION: ${AWS_REGION:-ap-south-1}
       S3_MEDIA_BUCKET: ${S3_MEDIA_BUCKET:-shivnadar-events-media}
     ports:

@@ -35,7 +35,7 @@ async function main() {
     await prisma.house.upsert({ where: { name: h.name }, update: {}, create: h });
   }
 
-  const adminEmail = (process.env.SEED_ADMIN_EMAIL ?? "admin@shivnadarschoolgurgaon.example")
+  const adminEmail = (process.env.SEED_ADMIN_EMAIL ?? "admin@snseventsportal.example")
     .trim()
     .toLowerCase();
   const existing = await prisma.user.findUnique({ where: { email: adminEmail } });
