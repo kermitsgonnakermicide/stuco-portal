@@ -1,6 +1,18 @@
 {
-  "framework": "nextjs",
-  "installCommand": "npm install",
-  "buildCommand": "npm run build",
-  "outputDirectory": ".next"
+  "services": {
+    "events-portal": {
+      "root": ".",
+      "framework": "nextjs",
+      "buildCommand": "npm ci && npx prisma generate && npm run build && npx prisma migrate deploy && npx tsx prisma/seed.ts"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": {
+        "type": "service",
+        "service": "events-portal"
+      }
+    }
+  ]
 }
