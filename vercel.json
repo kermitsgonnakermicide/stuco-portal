@@ -3,7 +3,7 @@
     "events-portal": {
       "root": ".",
       "framework": "nextjs",
-      "buildCommand": "npm ci && npx prisma generate && npm run build && npx prisma migrate deploy && npx tsx prisma/seed.ts"
+      "buildCommand": "npx prisma generate && npm run build && npx prisma migrate deploy && npx tsx prisma/seed.ts"
     }
   },
   "rewrites": [

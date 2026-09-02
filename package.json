@@ -29,19 +29,19 @@
     "@aws-sdk/client-s3": "^3.658.0",
     "@aws-sdk/s3-request-presigner": "^3.658.0",
     "sharp": "^0.33.5",
-    "file-type": "^19.5.0"
-  },
-  "devDependencies": {
+    "file-type": "^19.5.0",
     "prisma": "^6.19.3",
-    "typescript": "^5.9.3",
-    "vitest": "^3.2.7",
     "tsx": "^4.23.13",
-    "@types/node": "^24.0.0",
-    "@types/react": "^19.0.0",
-    "@types/sanitize-html": "^2.13.0",
     "tailwindcss": "^3.4.19",
     "postcss": "^8.4.47",
-    "autoprefixer": "^10.4.20"
+    "autoprefixer": "^10.4.20",
+    "typescript": "^5.9.3",
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.0.0",
+    "@types/sanitize-html": "^2.13.0"
+  },
+  "devDependencies": {
+    "vitest": "^3.2.7"
   },
   "allowScripts": {
     "@prisma/client": true,
