@@ -38,28 +38,62 @@ async function main() {
   const adminEmail = (process.env.SEED_ADMIN_EMAIL ?? "admin@snseventsportal.example")
     .trim()
     .toLowerCase();
+  // Optional env-driven credential (e.g. Vercel project env). When set, every
+  // deploy converges the admin account to this password: created on first
+  // run, rotated on later runs. Never printed — check deploy logs only for
+  // which path was taken, never the secret itself.
+  const envPassword = process.env.SEED_ADMIN_PASSWORD ?? "";
+  if (envPassword && (envPassword.length < 12 || envPassword.length > 200)) {
+    throw new Error("SEED_ADMIN_PASSWORD must be 12-200 characters when set.");
+  }
   const existing = await prisma.user.findUnique({ where: { email: adminEmail } });
 
   if (!existing) {
-    const tempPassword = crypto.randomBytes(12).toString("base64url");
-    const passwordHash = await argon2.hash(tempPassword, ARGON2_OPTS);
+    if (envPassword) {
+      const passwordHash = await argon2.hash(envPassword, ARGON2_OPTS);
+      await prisma.user.create({
+        data: {
+          email: adminEmail,
+          name: "Site Administrator",
+          passwordHash,
+          role: "ADMIN",
+        },
+      });
+      console.log(`Seed admin "${adminEmail}" created with password from SEED_ADMIN_PASSWORD.`);
+    } else {
+      const tempPassword = crypto.randomBytes(12).toString("base64url");
+      const passwordHash = await argon2.hash(tempPassword, ARGON2_OPTS);
 
-    await prisma.user.create({
+      await prisma.user.create({
+        data: {
+          email: adminEmail,
+          name: "Site Administrator",
+          passwordHash,
+          role: "ADMIN",
+        },
+      });
+
+      console.log("============================================================");
+      console.log(" Seed admin account created:");
+      console.log(` Email:    ${adminEmail}`);
+      console.log(` Password: ${tempPassword}`);
+      console.log(" This password is shown ONLY here. Log in and change it, or");
+      console.log(" rotate it via the admin panel, before deploying to students.");
+      console.log("============================================================");
+    }
+  } else if (envPassword) {
+    const passwordHash = await argon2.hash(envPassword, ARGON2_OPTS);
+    await prisma.user.update({
+      where: { email: adminEmail },
       data: {
-        email: adminEmail,
-        name: "Site Administrator",
         passwordHash,
         role: "ADMIN",
+        isActive: true,
+        failedLogins: 0,
+        lockedUntil: null,
       },
     });
-
-    console.log("============================================================");
-    console.log(" Seed admin account created:");
-    console.log(` Email:    ${adminEmail}`);
-    console.log(` Password: ${tempPassword}`);
-    console.log(" This password is shown ONLY here. Log in and change it, or");
-    console.log(" rotate it via the admin panel, before deploying to students.");
-    console.log("============================================================");
+    console.log(`Seed admin "${adminEmail}" already exists — password rotated from SEED_ADMIN_PASSWORD.`);
   } else {
     console.log(`Seed admin "${adminEmail}" already exists — skipping.`);
   }
