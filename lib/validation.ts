@@ -8,7 +8,7 @@
 import { z } from "zod";
 
 // Login has no session yet, so a synchronizer CSRF token can't apply; the
-// field used to be required here but was never verified server-side —
+// field used to be required here but was never verified server-side -
 // requiring an unverified token only broke the real login form (which
 // correctly doesn't send one). Per-IP rate limiting + account lockout are
 // the actual defenses against login abuse (see lib/rateLimit.ts, lib/auth.ts).
@@ -51,7 +51,7 @@ export const pointsAdjustSchema = z.object({
   houseId: z.string().cuid(),
   delta: z.number().int().refine((v) => v !== 0, "delta cannot be zero").refine(
     (v) => Math.abs(v) <= 1000,
-    "delta magnitude too large — check for a data-entry error"
+    "delta magnitude too large - check for a data-entry error"
   ),
   reason: z.string().trim().min(3).max(280),
   csrfToken: z.string().min(1),
@@ -66,7 +66,7 @@ export const registrationPublicSchema = z.object({
   formToken: z.string().min(1),
   // Honeypot field: real users never see/fill this; bots that autofill
   // everything do. Validation must ACCEPT any value here (bounded length)
-  // so the route can return its fake success — if zod rejected filled
+  // so the route can return its fake success - if zod rejected filled
   // honeypots with a 400 instead, bots would learn the field is a trap
   // and the route's pretend-success branch would be dead code.
   website: z.string().max(200).optional(),

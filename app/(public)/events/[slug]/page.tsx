@@ -1,6 +1,6 @@
 // Public event detail page. Descriptions are sanitized with an allowlist
 // at WRITE time (lib/sanitize.ts), so the stored HTML is safe to render
-// here — this page never accepts raw user HTML.
+// here - this page never accepts raw user HTML.
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import Link from "next/link";
@@ -15,7 +15,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
   const { slug } = await params;
   const event = await prisma.event.findUnique({ where: { slug } });
 
-  // Drafts and cancellations don't get a public page — same visibility
+  // Drafts and cancellations don't get a public page - same visibility
   // rule as the API (PUBLISHED only), enforced server-side.
   if (!event || event.status !== "PUBLISHED") notFound();
 
@@ -57,7 +57,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
           )}
         </dl>
 
-        {/* Stored description is sanitized on write — see lib/sanitize.ts */}
+        {/* Stored description is sanitized on write - see lib/sanitize.ts */}
         <div
           className="rich-text mt-8"
           dangerouslySetInnerHTML={{ __html: event.description }}
@@ -75,7 +75,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
             </Link>
           )}
           {event.registrationMode === "NONE" && (
-            <p className="text-gray-500 text-sm">No registration required — just turn up.</p>
+            <p className="text-gray-500 text-sm">No registration required - just turn up.</p>
           )}
         </div>
       </article>

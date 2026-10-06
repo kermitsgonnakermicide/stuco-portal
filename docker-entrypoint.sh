@@ -1,5 +1,5 @@
 #!/bin/sh
-# docker-entrypoint.sh — runs inside the web container before the server.
+# docker-entrypoint.sh - runs inside the web container before the server.
 # 1. Waits for Postgres by attempting the actual migration (deploy is
 #    idempotent; `migrate status` is NOT usable as a readiness probe here
 #    because it exits non-zero whenever migrations are still pending,
@@ -22,7 +22,7 @@ until npx prisma migrate deploy; do
 done
 
 echo "[entrypoint] seeding initial data (no-op if already seeded)..."
-npx tsx prisma/seed.ts || echo "[entrypoint] WARNING: seed step failed — check logs" >&2
+npx tsx prisma/seed.ts || echo "[entrypoint] WARNING: seed step failed - check logs" >&2
 
 echo "[entrypoint] starting server"
 exec "$@"

@@ -1,7 +1,7 @@
 // lib/points.ts
 // House points are never stored as a mutable running total. The
 // leaderboard is always SUM(PointsEntry.delta) grouped by house, computed
-// at read time (and cheap to cache for a few seconds — see route handler).
+// at read time (and cheap to cache for a few seconds - see route handler).
 // This means there is no "total" column an attacker or a bug could
 // desync from the audit trail: the ledger IS the total.
 
@@ -36,7 +36,7 @@ export async function getLeaderboard() {
 
 /**
  * Record a points adjustment. Runs inside a transaction so the ledger
- * entry and its audit log row either both commit or neither does —
+ * entry and its audit log row either both commit or neither does -
  * there's never a points change with no corresponding audit trail.
  */
 export async function adjustPoints(opts: {

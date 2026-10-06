@@ -2,7 +2,7 @@
 
 // Points adjustment form. Delta is signed: +25 for a win, -10 for a
 // deduction. The API enforces |delta| <= 1000, non-zero, and records the
-// actor — this form just keeps the input honest.
+// actor - this form just keeps the input honest.
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -38,13 +38,13 @@ export default function PointsForm({ csrfToken, houses }: { csrfToken: string; h
         router.refresh(); // re-render server standings + ledger
       } else {
         setError(
-          res.status === 403 ? "Security check failed — reload the page."
+          res.status === 403 ? "Security check failed - reload the page."
           : typeof data.error === "string" ? data.error
           : `Could not record (${res.status}).`
         );
       }
     } catch {
-      setError("Network error — please try again.");
+      setError("Network error - please try again.");
     }
     setSending(false);
   }
@@ -94,7 +94,7 @@ export default function PointsForm({ csrfToken, houses }: { csrfToken: string; h
 
       <button type="submit" disabled={sending || !houseId}
         className="btn-primary w-full disabled:opacity-60 disabled:cursor-not-allowed">
-        {sending ? "Recording…" : "Record points"}
+        {sending ? "Recording..." : "Record points"}
       </button>
     </form>
   );

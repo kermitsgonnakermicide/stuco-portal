@@ -29,7 +29,7 @@ export default async function PointsPage() {
     <main className="max-w-6xl mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold">House points</h1>
       <p className="text-sm text-gray-500 mt-0.5">
-        Every change is permanently recorded — corrections are new entries, never edits.
+        Every change is permanently recorded - corrections are new entries, never edits.
       </p>
 
       <div className="mt-6 grid grid-cols-1 lg:grid-cols-5 gap-8">

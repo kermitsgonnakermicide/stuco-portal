@@ -1,6 +1,6 @@
 // lib/authz.ts
 // Server-side authorization. Every mutating route calls requireRole()
-// BEFORE touching the database — there is no client-trusted role, no
+// BEFORE touching the database - there is no client-trusted role, no
 // hidden admin route, and no API that infers permission from what the
 // UI happens to show. If this throws, the route handler must return
 // the thrown response and do nothing else.
@@ -21,7 +21,7 @@ export class AuthError extends Error {
  * Resolve the current user and assert they hold one of `roles`.
  * Throws AuthError(401) if not logged in, AuthError(403) if logged in
  * but under-privileged. Route handlers should catch AuthError and
- * return NextResponse.json({ error }, { status }) — never a stack trace.
+ * return NextResponse.json({ error }, { status }) - never a stack trace.
  */
 export async function requireRole(roles: Role[]) {
   const session = await getCurrentSession();

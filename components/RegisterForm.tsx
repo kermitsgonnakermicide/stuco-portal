@@ -1,7 +1,7 @@
 "use client";
 
 // Public registration form. The honeypot field ("website") is hidden with
-// CSS + aria-hidden and must never be autofilled by real users — bots that
+// CSS + aria-hidden and must never be autofilled by real users - bots that
 // fill it get a fake success response from the API.
 import { useState } from "react";
 
@@ -10,7 +10,7 @@ export default function RegisterForm({ eventId, formToken }: { eventId: string; 
   const [studentEmail, setStudentEmail] = useState("");
   const [guardianName, setGuardianName] = useState("");
   const [notes, setNotes] = useState("");
-  const [website, setWebsite] = useState(""); // honeypot — leave empty
+  const [website, setWebsite] = useState(""); // honeypot - leave empty
   const [state, setState] = useState<"idle" | "sending">("idle");
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
@@ -40,7 +40,7 @@ export default function RegisterForm({ eventId, formToken }: { eventId: string; 
         setDone(true);
       } else {
         // Surface the API's friendly message verbatim (event full,
-        // already registered, expired form…).
+        // already registered, expired form...).
         setError(
           typeof data.error === "string"
             ? data.error
@@ -49,7 +49,7 @@ export default function RegisterForm({ eventId, formToken }: { eventId: string; 
         setState("idle");
       }
     } catch {
-      setError("Network error — please try again.");
+      setError("Network error - please try again.");
       setState("idle");
     }
   }
@@ -111,7 +111,7 @@ export default function RegisterForm({ eventId, formToken }: { eventId: string; 
       )}
 
       <button type="submit" disabled={state === "sending"} className="btn-primary w-full disabled:opacity-60 disabled:cursor-not-allowed">
-        {state === "sending" ? "Registering…" : "Register"}
+        {state === "sending" ? "Registering..." : "Register"}
       </button>
     </form>
   );

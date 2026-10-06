@@ -1,4 +1,4 @@
-# Events Portal — Architecture & Security Design
+# Events Portal - Architecture & Security Design
 
 Stack: **Next.js 15 (App Router) + Prisma + PostgreSQL**, media on **S3** (private bucket + CloudFront signed URLs), sessions in Postgres, rate-limit counters in **Redis**. One coherent stack end to end, no mixed frameworks.
 
@@ -38,9 +38,9 @@ Stack: **Next.js 15 (App Router) + Prisma + PostgreSQL**, media on **S3** (priva
 **Why this stack:** Next.js API routes give server-side rendering for public content-heavy pages (good for accessibility/SEO/no-JS readability) *and* a natural home for authenticated API routes in the same codebase, so there's one deployment, one auth boundary, and no separate API origin to CORS-harden. Prisma gives parameterized queries by construction (see §4). Postgres holds sessions server-side rather than pure JWTs, so a compromised device's access can be revoked instantly.
 
 ### Request flow for a mutation (e.g. "add house points")
-1. Request hits WAF/CDN → basic bot/DDoS filtering, TLS terminated.
+1. Request hits WAF/CDN -> basic bot/DDoS filtering, TLS terminated.
 2. `middleware.ts` attaches security headers to the eventual response.
-3. Route handler: rate-limit check (IP-keyed) → session lookup (`requireRole`) → zod validation → CSRF token check → sanitize any rich text → Prisma write **inside a transaction with its audit-log row** → structured audit log entry → JSON response.
+3. Route handler: rate-limit check (IP-keyed) -> session lookup (`requireRole`) -> zod validation -> CSRF token check -> sanitize any rich text -> Prisma write **inside a transaction with its audit-log row** -> structured audit log entry -> JSON response.
 4. Every step above fails closed: any failure returns 4xx/5xx before the database is touched, except the audit log itself, which is the last write and is transactional with the business write it accompanies.
 
 ---
@@ -63,7 +63,7 @@ Stack: **Next.js 15 (App Router) + Prisma + PostgreSQL**, media on **S3** (priva
 | T12 | **Clickjacking** | Portal framed inside a malicious site to trick an admin into clicking | `X-Frame-Options: DENY` and CSP `frame-ancestors 'none'` |
 | T13 | **Dependency supply-chain risk** | A compromised npm package | Lockfile committed, `npm audit`/Dependabot in CI, minimal dependency surface, pinned major versions (see checklist §5) |
 
-**Explicit non-goals / accepted risk:** this design does not attempt to defend against a fully compromised admin device (keylogger-level compromise) or a malicious insider ADMIN account — those are handled by school IT policy (device management, background checks) rather than application code. The audit log is designed to make such abuse *detectable after the fact*, not to prevent it outright.
+**Explicit non-goals / accepted risk:** this design does not attempt to defend against a fully compromised admin device (keylogger-level compromise) or a malicious insider ADMIN account - those are handled by school IT policy (device management, background checks) rather than application code. The audit log is designed to make such abuse *detectable after the fact*, not to prevent it outright.
 
 ---
 
@@ -73,7 +73,7 @@ Stack: **Next.js 15 (App Router) + Prisma + PostgreSQL**, media on **S3** (priva
 |---|:---:|:---:|:---:|
 | View published events, calendar, leaderboard | ✅ | ✅ | ✅ |
 | Submit public event registration | ✅ (own form only) | ✅ | ✅ |
-| Log in to portal | — | ✅ | ✅ |
+| Log in to portal | - | ✅ | ✅ |
 | Create / edit events, upload media, enter results | ❌ | ✅ | ✅ |
 | Delete events | ❌ | ❌ | ✅ |
 | Add / subtract house points | ❌ | ✅ | ✅ |
@@ -89,8 +89,8 @@ No route infers permission from UI state. The same `requireRole()` check guards 
 Core tables: `User` (argon2id `passwordHash`, `role` enum, lockout fields), `Session` (server-side, hashed token, per-session CSRF secret), `House`, `PointsEntry` (append-only ledger), `Event`, `EventMedia`, `EventResult`, `RegistrationEntry`, `AuditLog` (append-only, actor/action/target/hashed-IP/metadata).
 
 Design choices that double as security controls:
-- **No plaintext or reversible password storage** — `passwordHash` only.
-- **Ledger, not counters** — `PointsEntry.delta` rows, summed at read time, so history can't silently drift from the displayed total.
+- **No plaintext or reversible password storage** - `passwordHash` only.
+- **Ledger, not counters** - `PointsEntry.delta` rows, summed at read time, so history can't silently drift from the displayed total.
 - **Foreign keys everywhere** with `onDelete: Cascade` only where losing child rows is actually correct (event media/results/registrations cascade with their event; audit logs and points entries never cascade-delete, preserving history even if a house or event record changes).
 - **`@@unique([eventId, studentEmail])`** on `RegistrationEntry` prevents duplicate sign-ups at the database level, not just in application logic (defense in depth against a race condition or a bypassed check).
 
@@ -99,12 +99,12 @@ Design choices that double as security controls:
 ## 5. Deployment & hardening checklist
 
 **Transport & edge**
-- [ ] TLS 1.2+ only, HSTS with `preload`, HTTP→HTTPS redirect at the load balancer (never rely on the app alone).
+- [ ] TLS 1.2+ only, HSTS with `preload`, HTTP->HTTPS redirect at the load balancer (never rely on the app alone).
 - [ ] Deploy behind a WAF (AWS WAF / Cloudflare) with managed rule sets (SQLi, XSS, bad bots) plus a custom rate rule on `/api/auth/login` and `/api/registrations` as a second layer above the app's own rate limiter.
 - [ ] CDN in front of static assets and public GET routes; cache-busting on deploy.
 
 **App & secrets**
-- [ ] All secrets (DB URL, Redis URL, AWS keys, CSRF/audit peppers) come from the platform's encrypted secret store — never committed, `.env*` gitignored, `.env.example` has no real values.
+- [ ] All secrets (DB URL, Redis URL, AWS keys, CSRF/audit peppers) come from the platform's encrypted secret store - never committed, `.env*` gitignored, `.env.example` has no real values.
 - [ ] `npm audit` / GitHub Dependabot enabled; CI fails on high/critical vulnerabilities; dependencies patched on a defined cadence (e.g. weekly).
 - [ ] `NODE_ENV=production` set; Prisma query logging **disabled** in production (already default in `lib/db.ts`).
 - [ ] Rotate the seed admin password immediately after first deploy (`prisma/seed.ts` prints a one-time random password; log in and change it, or provision real accounts and deactivate the seed one).
@@ -139,4 +139,4 @@ Design choices that double as security controls:
 
 ## 6. What's out of scope for this deliverable
 
-This is a reference implementation of the security-critical paths (auth, CSRF, RBAC, validation, sanitization, rate limiting, audit logging, file-upload hardening) plus the schema and a matching public UI demo. It intentionally does not include: full CI/CD pipeline config, a complete admin UI for every CRUD screen, email/notification delivery, or a production Terraform/CDK stack for the infrastructure diagram above — those are straightforward to build on this foundation but are implementation volume rather than design decisions, and are noted here so the boundary is explicit rather than silently assumed.
+This is a reference implementation of the security-critical paths (auth, CSRF, RBAC, validation, sanitization, rate limiting, audit logging, file-upload hardening) plus the schema and a matching public UI demo. It intentionally does not include: full CI/CD pipeline config, a complete admin UI for every CRUD screen, email/notification delivery, or a production Terraform/CDK stack for the infrastructure diagram above - those are straightforward to build on this foundation but are implementation volume rather than design decisions, and are noted here so the boundary is explicit rather than silently assumed.

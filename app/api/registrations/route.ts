@@ -1,6 +1,6 @@
 // app/api/registrations/route.ts
 // This is the ONLY write endpoint in the app that doesn't require a
-// logged-in session — by design, so parents/students can register for
+// logged-in session - by design, so parents/students can register for
 // an event without an account. "Unauthenticated" does not mean
 // "unprotected": it still gets its own signed, time-boxed form token
 // (see lib/csrf.ts), a tight rate limit, strict validation, a honeypot
@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true }, { status: 201 });
   } catch (err: any) {
     if (err?.code === "P2002") {
-      // Unique constraint on [eventId, studentEmail] — already registered.
+      // Unique constraint on [eventId, studentEmail] - already registered.
       return NextResponse.json({ error: "You're already registered for this event." }, { status: 409 });
     }
     throw err;

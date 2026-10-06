@@ -1,5 +1,5 @@
 // Public registration page. The signed, time-boxed form token is minted
-// server-side and handed to the client component — the API rejects
+// server-side and handed to the client component - the API rejects
 // submissions without a fresh token (30 min window), which is what keeps
 // scripted spam off this endpoint.
 import { prisma } from "@/lib/db";
@@ -27,7 +27,7 @@ export default async function RegisterPage({ params }: { params: Promise<{ slug:
           </Link>
           <h1 className="text-2xl font-bold mt-2">Register: {event.title}</h1>
           {event.capacity != null && (
-            <p className="text-blue-100 text-sm mt-1">Limited places — {event.capacity} available.</p>
+            <p className="text-blue-100 text-sm mt-1">Limited places - {event.capacity} available.</p>
           )}
         </div>
       </header>

@@ -1,6 +1,6 @@
 // lib/csrf.ts
 // Synchronizer-token CSRF defense, layered on top of SameSite=Lax cookies
-// (belt and suspenders — SameSite alone doesn't cover every browser/proxy
+// (belt and suspenders - SameSite alone doesn't cover every browser/proxy
 // edge case, and this also protects the public registration form, which
 // has no session to anchor SameSite behavior to).
 //
@@ -22,7 +22,7 @@ export function verifyCsrfToken(csrfSecret: string, submitted: string | null): b
   const expected = issueCsrfToken(csrfSecret);
   const a = Buffer.from(expected);
   const b = Buffer.from(submitted);
-  // Constant-time comparison — avoids leaking token bytes via timing.
+  // Constant-time comparison - avoids leaking token bytes via timing.
   return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
 

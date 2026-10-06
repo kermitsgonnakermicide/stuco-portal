@@ -71,7 +71,7 @@ export default async function EditEventPage({ params }: { params: Promise<{ id: 
                       <a href={`mailto:${r.studentEmail}`} className="text-xs text-blue-700 hover:underline">{r.studentEmail}</a>
                       {r.notes && <p className="text-xs text-gray-500 mt-0.5">{r.notes}</p>}
                     </td>
-                    <td className="px-4 py-2.5 text-gray-600 hidden sm:table-cell">{r.guardianName ?? "—"}</td>
+                    <td className="px-4 py-2.5 text-gray-600 hidden sm:table-cell">{r.guardianName ?? "-"}</td>
                     <td className="px-4 py-2.5 text-gray-600 whitespace-nowrap">
                       {new Date(r.createdAt).toLocaleString("en-GB", { dateStyle: "short", timeStyle: "short" })}
                     </td>
@@ -85,7 +85,7 @@ export default async function EditEventPage({ params }: { params: Promise<{ id: 
           </div>
           {event._count.registrations > 100 && (
             <p className="mt-2 text-xs text-gray-400">
-              Showing the 100 most recent — full list in the database.
+              Showing the 100 most recent - full list in the database.
             </p>
           )}
         </section>

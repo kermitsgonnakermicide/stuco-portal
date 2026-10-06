@@ -10,7 +10,7 @@ import { logAudit } from "@/lib/audit";
 import slugify from "slugify";
 
 // GET is public: anyone can list PUBLISHED events, filtered by query
-// params. Never exposes DRAFT events to unauthenticated requests — the
+// params. Never exposes DRAFT events to unauthenticated requests - the
 // status filter is applied server-side, not left to the client.
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({ events });
 }
 
-// POST requires an authenticated ADMIN or STAFF session — there is no
+// POST requires an authenticated ADMIN or STAFF session - there is no
 // unauthenticated write path to this route, full stop.
 export async function POST(req: NextRequest) {
   try {

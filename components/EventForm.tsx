@@ -90,14 +90,14 @@ export default function EventForm({
       setError(explain(data, res.status));
       setSending(false);
     } catch {
-      setError("Network error — please try again.");
+      setError("Network error - please try again.");
       setSending(false);
     }
   }
 
   function explain(data: { error?: unknown }, status: number): string {
-    if (status === 401) return "Your session expired — reload the page and sign in again.";
-    if (status === 403) return "Security check failed — reload the page and try again.";
+    if (status === 401) return "Your session expired - reload the page and sign in again.";
+    if (status === 403) return "Security check failed - reload the page and try again.";
     if (data && typeof data.error === "object" && data.error !== null) {
       // zod flatten(): collect first message per field into one line
       const flat = data.error as { fieldErrors?: Record<string, string[] | undefined> };
@@ -131,7 +131,7 @@ export default function EventForm({
           {/* Sanitized server-side on save (lib/sanitize.ts); simple HTML allowed */}
           <textarea id="description" required rows={7} maxLength={20000} value={description}
             onChange={(e) => setDescription(e.target.value)} className="input font-mono text-xs"
-            placeholder="<p>Schedule, kit list, timings…</p>" />
+            placeholder="<p>Schedule, kit list, timings...</p>" />
           <p className="mt-1 text-xs text-gray-400">Basic HTML allowed (&lt;p&gt;, &lt;h2&gt;, lists, links). Scripts are stripped automatically.</p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -155,7 +155,7 @@ export default function EventForm({
             <label htmlFor="category" className="label">Category</label>
             <input id="category" maxLength={60} value={category}
               onChange={(e) => setCategory(e.target.value)} className="input"
-              placeholder="Athletics, Arts, Academic…" list="categories" />
+              placeholder="Athletics, Arts, Academic..." list="categories" />
             <datalist id="categories">
               <option value="Athletics" /><option value="Arts" />
               <option value="Academic" /><option value="Community" />
@@ -189,14 +189,14 @@ export default function EventForm({
             <label htmlFor="registrationUrl" className="label">Registration link</label>
             <input id="registrationUrl" required type="url" maxLength={500} value={registrationUrl}
               onChange={(e) => setRegistrationUrl(e.target.value)} className="input"
-              placeholder="https://forms.gle/…" />
+              placeholder="https://forms.gle/..." />
             <p className="mt-1 text-xs text-gray-400">Paste your Google Form (&quot;Send&quot; &rarr; copy link) or any other sign-up URL.</p>
           </div>
         )}
 
         {regMode === "FORM" && (
           <div>
-            <label htmlFor="capacity" className="label">Capacity <span className="text-gray-400">(optional — leave empty for unlimited)</span></label>
+            <label htmlFor="capacity" className="label">Capacity <span className="text-gray-400">(optional - leave empty for unlimited)</span></label>
             <input id="capacity" type="number" min={1} max={10000} value={capacity}
               onChange={(e) => setCapacity(e.target.value)} className="input sm:w-48" placeholder="100" />
           </div>
@@ -207,8 +207,8 @@ export default function EventForm({
         <label htmlFor="status" className="label mb-0">Visibility</label>
         <select id="status" value={status} onChange={(e) => setStatus(e.target.value as typeof status)}
           className="input w-auto">
-          <option value="DRAFT">Draft — staff only</option>
-          <option value="PUBLISHED">Published — live on the site</option>
+          <option value="DRAFT">Draft - staff only</option>
+          <option value="PUBLISHED">Published - live on the site</option>
           <option value="CANCELLED">Cancelled</option>
         </select>
 
@@ -220,7 +220,7 @@ export default function EventForm({
 
         <button type="submit" disabled={sending}
           className="rounded-md bg-brand-navy px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-brand-navy focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed transition">
-          {sending ? "Saving…" : editing ? "Save changes" : "Create event"}
+          {sending ? "Saving..." : editing ? "Save changes" : "Create event"}
         </button>
       </section>
     </form>

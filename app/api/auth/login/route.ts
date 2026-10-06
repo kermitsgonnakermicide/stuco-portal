@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
   const userAgent = req.headers.get("user-agent");
 
-  // 1. Rate limit BEFORE touching the DB or hashing anything — this is
+  // 1. Rate limit BEFORE touching the DB or hashing anything - this is
   //    the cheapest possible rejection point for a credential-stuffing run.
   const rl = await checkRateLimit("login", ip);
   if (!rl.allowed) {
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
   //    token (see /app/(public)/portal/login/page.tsx) tied to a
   //    short-lived anonymous CSRF cookie set on GET.
   //    (Implementation shared with lib/csrf.ts's public-form path.)
-  // — omitted here for brevity of this excerpt; see csrf.ts docstring.
+  // - omitted here for brevity of this excerpt; see csrf.ts docstring.
 
   const result = await attemptLogin({
     email: parsed.data.email,
@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
   });
 
   if (!result.ok) {
-    // Same generic message either way — never reveal whether the email
+    // Same generic message either way - never reveal whether the email
     // exists, whether the account is locked leaks minimal info but is
     // an acceptable UX tradeoff for a small trusted user base.
     const message =

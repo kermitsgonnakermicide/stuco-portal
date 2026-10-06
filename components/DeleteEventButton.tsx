@@ -32,7 +32,7 @@ export default function DeleteEventButton({ eventId, csrfToken }: { eventId: str
       );
       setSending(false);
     } catch {
-      setError("Network error — please try again.");
+      setError("Network error - please try again.");
       setSending(false);
     }
   }
@@ -51,7 +51,7 @@ export default function DeleteEventButton({ eventId, csrfToken }: { eventId: str
       {error && <span className="text-red-700">{error}</span>}
       <button onClick={doDelete} disabled={sending}
         className="rounded-md bg-red-600 px-3 py-1.5 font-semibold text-white hover:bg-red-700 disabled:opacity-60 transition">
-        {sending ? "Deleting…" : "Confirm delete"}
+        {sending ? "Deleting..." : "Confirm delete"}
       </button>
       <button onClick={() => { setConfirming(false); setError(""); }} disabled={sending}
         className="text-gray-500 hover:text-gray-800 transition">

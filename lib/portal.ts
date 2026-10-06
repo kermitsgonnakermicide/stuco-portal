@@ -1,7 +1,7 @@
 // lib/portal.ts
 // Server-side gate for /portal pages. API routes use requireRole() which
 // throws; pages can't throw a response, so this variant redirects to the
-// login page instead — same policy (session must be live AND role must be
+// login page instead - same policy (session must be live AND role must be
 // STAFF or ADMIN), different failure mode for HTML vs JSON consumers.
 import { redirect } from "next/navigation";
 import { getCurrentSession } from "./auth";

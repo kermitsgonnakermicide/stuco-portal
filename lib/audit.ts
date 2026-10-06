@@ -14,7 +14,7 @@ function assertSafeMetadata(metadata: Record<string, unknown> | undefined) {
   if (!metadata) return;
   for (const key of Object.keys(metadata)) {
     if (FORBIDDEN_KEYS.some((f) => key.toLowerCase().includes(f))) {
-      throw new Error(`Refusing to audit-log a field named "${key}" — looks sensitive.`);
+      throw new Error(`Refusing to audit-log a field named "${key}" - looks sensitive.`);
     }
   }
 }

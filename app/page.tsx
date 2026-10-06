@@ -1,6 +1,6 @@
 // app/page.tsx
 // Public homepage: upcoming events + live house leaderboard.
-// Server component — data is fetched directly via lib/ (NOT via fetch()
+// Server component - data is fetched directly via lib/ (NOT via fetch()
 // to our own API routes; relative fetch() URLs are invalid during SSR).
 import { prisma } from "@/lib/db";
 import { getLeaderboard } from "@/lib/points";
@@ -31,7 +31,7 @@ export default async function HomePage() {
     leaderboard = await getLeaderboard();
   } catch (err) {
     // Database not reachable (e.g. first boot before migrations). Render
-    // the shell instead of a 500 — the API routes fail closed meanwhile.
+    // the shell instead of a 500 - the API routes fail closed meanwhile.
     console.error("Homepage data unavailable:", err);
   }
 
@@ -40,7 +40,7 @@ export default async function HomePage() {
       <header className="bg-[#1B2A4A] text-white shadow">
         <div className="max-w-6xl mx-auto px-4 py-8">
           <h1 className="text-3xl font-bold">Shiv Nadar School Gurgaon</h1>
-          <p className="text-blue-100 mt-1">Events Portal — student events, registrations, and house points.</p>
+          <p className="text-blue-100 mt-1">Events Portal - student events, registrations, and house points.</p>
           <nav className="mt-3">
             <a href="/portal/login" className="text-sm underline text-blue-200 hover:text-white">
               Staff login

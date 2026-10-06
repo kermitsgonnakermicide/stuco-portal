@@ -1,15 +1,15 @@
 // ============================================================================
-// Events Portal — Prisma schema (PostgreSQL)
+// Events Portal - Prisma schema (PostgreSQL)
 // ============================================================================
 // Design notes:
 // - Passwords are never stored in plaintext. `passwordHash` holds an argon2id
 //   hash (see lib/auth.ts). There is no "password" field anywhere.
 // - Every write to `HousePoints` is immutable and paired with a row in
 //   `PointsAuditLog`, so the leaderboard total is always reconstructable
-//   and reviewable — nobody can silently edit history.
+//   and reviewable - nobody can silently edit history.
 // - `AuditLog` captures every authentication event and every admin mutation
 //   (event CRUD, media upload, points change, role change) with actor,
-//   action, target, timestamp and IP — but never request bodies, tokens,
+//   action, target, timestamp and IP - but never request bodies, tokens,
 //   or password material.
 // - Enums keep role and status values out of free-text columns, which closes
 //   off a class of injection / validation bugs at the schema level.
@@ -66,7 +66,7 @@ model User {
 }
 
 // Server-side sessions (rather than pure stateless JWT) so that an admin
-// can revoke a compromised session immediately — important for a school
+// can revoke a compromised session immediately - important for a school
 // portal where staff devices get lost or shared.
 model Session {
   id        String   @id @default(cuid())
@@ -75,7 +75,7 @@ model Session {
   tokenHash String   @unique // SHA-256 of the session token; raw token never stored
   csrfSecret String  // per-session CSRF secret, used to derive/validate CSRF tokens
   userAgent String?
-  ipHash    String? // hashed, not raw IP — see lib/audit.ts
+  ipHash    String? // hashed, not raw IP - see lib/audit.ts
   expiresAt DateTime
   createdAt DateTime @default(now())
 
@@ -95,7 +95,7 @@ model House {
 }
 
 // Every points change is its own append-only row. Current total per house
-// = SUM(delta) — see lib/points.ts. Rows are never updated or deleted from
+// = SUM(delta) - see lib/points.ts. Rows are never updated or deleted from
 // the app layer; corrections are made with a new offsetting entry, which
 // keeps the leaderboard's history honest and auditable.
 model PointsEntry {
@@ -123,7 +123,7 @@ model Event {
   endsAt           DateTime?
   location         String?           @db.VarChar(200)
   category         String?           @db.VarChar(60) // e.g. "Athletics", "Arts", "Academic"
-  thumbnailKey     String? // S3 object key, not a public URL — signed on read
+  thumbnailKey     String? // S3 object key, not a public URL - signed on read
   registrationMode RegistrationMode  @default(NONE)
   registrationUrl  String? // used when registrationMode = LINK
   capacity         Int? // used when registrationMode = FORM
@@ -189,7 +189,7 @@ model RegistrationEntry {
 }
 
 // Append-only audit trail for authentication and every admin mutation.
-// Never stores request bodies, passwords, tokens, or session secrets —
+// Never stores request bodies, passwords, tokens, or session secrets -
 // only who, what, on which record, when, and a hashed IP for abuse
 // investigation.
 model AuditLog {

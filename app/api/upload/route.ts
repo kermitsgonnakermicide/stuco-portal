@@ -1,8 +1,8 @@
 // app/api/upload/route.ts
 // File upload hardening checklist applied here:
-//  1. Auth + role required — no unauthenticated upload path.
+//  1. Auth + role required - no unauthenticated upload path.
 //  2. Size capped (8 MB) before the body is fully buffered where possible.
-//  3. MIME type checked against an allowlist — AND the actual file bytes
+//  3. MIME type checked against an allowlist - AND the actual file bytes
 //     are sniffed (not just trusting the client-supplied Content-Type,
 //     which is trivially spoofable).
 //  4. Filenames are never trusted: we generate a random key and never
@@ -12,7 +12,7 @@
 //     key alone doesn't grant standing access.
 //  6. Uploaded images are re-encoded (via sharp) rather than stored
 //     as-is, which strips embedded scripts/metadata and neutralizes
-//     polyglot-file attacks (e.g. a GIFAR or an SVG with inline JS —
+//     polyglot-file attacks (e.g. a GIFAR or an SVG with inline JS -
 //     SVG is not on the allowlist at all, for this reason).
 //  7. Bucket + CDN are configured separately with a strict CSP-aligned
 //     CORS policy (see deployment checklist).
@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
 
     const buffer = Buffer.from(await file.arrayBuffer());
 
-    // Sniff real content type from magic bytes — never trust file.type.
+    // Sniff real content type from magic bytes - never trust file.type.
     const sniffed = await fileTypeFromBuffer(buffer);
     if (!sniffed || !UPLOAD_LIMITS.allowedMime.includes(sniffed.mime as any)) {
       return NextResponse.json({ error: "Unsupported or spoofed file type" }, { status: 415 });

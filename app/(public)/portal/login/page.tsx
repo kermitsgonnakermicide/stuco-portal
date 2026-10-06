@@ -17,7 +17,7 @@ export default function LoginPage() {
 
     try {
       // The API rate-limits per IP (8 / 15 min) and locks accounts after
-      // 5 bad passwords — its error text is written to be shown as-is.
+      // 5 bad passwords - its error text is written to be shown as-is.
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -32,7 +32,7 @@ export default function LoginPage() {
       setError(typeof data.error === "string" ? data.error : "Login failed");
       setSending(false);
     } catch {
-      setError("Network error — please try again.");
+      setError("Network error - please try again.");
       setSending(false);
     }
   };
@@ -75,7 +75,7 @@ export default function LoginPage() {
             disabled={sending}
             className="btn-primary w-full disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {sending ? "Signing in…" : "Sign in"}
+            {sending ? "Signing in..." : "Sign in"}
           </button>
 
           <p className="text-center text-sm pt-2 border-t border-gray-100">

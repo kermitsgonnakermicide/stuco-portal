@@ -10,7 +10,7 @@ export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
     log: process.env.NODE_ENV === "development" ? ["warn", "error"] : ["error"],
-    // Never log ["query"] in production — bind parameters can include
+    // Never log ["query"] in production - bind parameters can include
     // personal data (student names/emails) and would leak into log
     // aggregators otherwise.
   });

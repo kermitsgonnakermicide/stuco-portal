@@ -1,10 +1,10 @@
-# docker-compose.yml — local/demo deployment of the Events Portal.
+# docker-compose.yml - local/demo deployment of the Events Portal.
 #
 #   docker-compose up --build
 #
 # App:      http://localhost:3000
 # Login:    admin@snseventsportal.example  (password printed once in
-#           `docker-compose logs web` by the seeder — rotate on first login)
+#           `docker-compose logs web` by the seeder - rotate on first login)
 #
 # DEMO CREDENTIALS ONLY: the values below (and any ${VAR:-default} fallback)
 # are fine for a laptop stack. For anything internet-reachable, set real
@@ -53,7 +53,7 @@ services:
       - db
       - redis
     environment:
-      # Local compose DB has no TLS — sslmode intentionally omitted here.
+      # Local compose DB has no TLS - sslmode intentionally omitted here.
       # Hosted deployments MUST use ?sslmode=require (see .env.example).
       DATABASE_URL: postgresql://${POSTGRES_USER:-events}:${POSTGRES_PASSWORD:-demo-only-change-me}@db:5432/events_portal
       REDIS_URL: redis://redis:6379

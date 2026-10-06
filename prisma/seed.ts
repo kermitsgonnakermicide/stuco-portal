@@ -1,11 +1,11 @@
 // prisma/seed.ts
 // Seeds houses and one admin account for first-time setup. The admin
-// password is generated randomly and printed ONCE — it is never
+// password is generated randomly and printed ONCE - it is never
 // hardcoded, never committed, and must be rotated via the portal on
 // first login (see deployment checklist item "rotate seed credentials").
 //
 // NOTE: this script hashes with argon2id DIRECTLY (same parameters as
-// lib/auth.ts's ARGON2_OPTS) instead of importing hashPassword() —
+// lib/auth.ts's ARGON2_OPTS) instead of importing hashPassword() -
 // importing lib/auth pulls in next/headers, which only loads inside the
 // Next.js server runtime and would break `tsx prisma/seed.ts`.
 
@@ -40,7 +40,7 @@ async function main() {
     .toLowerCase();
   // Optional env-driven credential (e.g. Vercel project env). When set, every
   // deploy converges the admin account to this password: created on first
-  // run, rotated on later runs. Never printed — check deploy logs only for
+  // run, rotated on later runs. Never printed - check deploy logs only for
   // which path was taken, never the secret itself.
   const envPassword = process.env.SEED_ADMIN_PASSWORD ?? "";
   if (envPassword && (envPassword.length < 12 || envPassword.length > 200)) {
@@ -93,9 +93,9 @@ async function main() {
         lockedUntil: null,
       },
     });
-    console.log(`Seed admin "${adminEmail}" already exists — password rotated from SEED_ADMIN_PASSWORD.`);
+    console.log(`Seed admin "${adminEmail}" already exists - password rotated from SEED_ADMIN_PASSWORD.`);
   } else {
-    console.log(`Seed admin "${adminEmail}" already exists — skipping.`);
+    console.log(`Seed admin "${adminEmail}" already exists - skipping.`);
   }
 }
 

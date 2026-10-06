@@ -1,6 +1,6 @@
 // lib/auth.ts
 // Core authentication primitives. No route handler talks to bcrypt/argon2
-// or touches the Session table directly — everything funnels through here
+// or touches the Session table directly - everything funnels through here
 // so the hashing algorithm, cookie flags, and lockout policy live in one
 // audited place.
 
@@ -11,7 +11,7 @@ import { cookies } from "next/headers";
 import { logAudit } from "./audit";
 
 const SESSION_COOKIE = "session";
-const SESSION_TTL_MS = 1000 * 60 * 60 * 8; // 8 hours — a school staff shift
+const SESSION_TTL_MS = 1000 * 60 * 60 * 8; // 8 hours - a school staff shift
 const MAX_FAILED_LOGINS = 5;
 const LOCKOUT_MS = 1000 * 60 * 15; // 15 minutes
 
@@ -144,7 +144,7 @@ export async function attemptLogin(opts: {
 
 /**
  * Issue a server-side session, set an HttpOnly/Secure/SameSite cookie
- * holding only an opaque random token (never a JWT with embedded role —
+ * holding only an opaque random token (never a JWT with embedded role -
  * role is looked up server-side on every request from the DB, so a role
  * change or account deactivation takes effect immediately, not at next
  * token expiry).
@@ -170,7 +170,7 @@ export async function createSession(
     },
   });
 
-  // Next.js 15: cookies() is async — must be awaited before use.
+  // Next.js 15: cookies() is async - must be awaited before use.
   const cookieStore = await cookies();
   cookieStore.set(SESSION_COOKIE, token, {
     httpOnly: true,
@@ -214,7 +214,7 @@ export async function destroySession() {
   cookieStore.delete(SESSION_COOKIE);
 }
 
-/** Revoke every session for a user — used on password reset or admin-forced logout. */
+/** Revoke every session for a user - used on password reset or admin-forced logout. */
 export async function revokeAllSessions(userId: string) {
   await prisma.session.deleteMany({ where: { userId } });
 }

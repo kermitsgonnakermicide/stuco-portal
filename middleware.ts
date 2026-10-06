@@ -10,7 +10,7 @@ export function middleware(req: NextRequest) {
   // HSTS only when the request actually arrived over TLS (e.g. behind a
   // reverse proxy that sets x-forwarded-proto). Sending it over plain
   // HTTP is a no-op at best; and `upgrade-insecure-requests` in the CSP
-  // is actively harmful on HTTP deployments — browsers rewrite every
+  // is actively harmful on HTTP deployments - browsers rewrite every
   // CSS/JS subresource to https://, which fails when no TLS terminator
   // exists (the page renders as unstyled, non-hydrated HTML).
   const isHttps = req.headers.get("x-forwarded-proto")?.split(",")[0]?.trim() === "https";
@@ -24,7 +24,7 @@ export function middleware(req: NextRequest) {
   }
 
   // No inline scripts without a nonce; images from self + our media CDN
-  // only; no plugins. NOTE: no upgrade-insecure-requests — see above;
+  // only; no plugins. NOTE: no upgrade-insecure-requests - see above;
   // re-add it (plus HSTS unconditionally) once the site terminates TLS.
   // NOTE: Next.js 15 App Router streaming injects inline <script> tags
   // (RSC payload) that don't receive the middleware-generated nonce, so a

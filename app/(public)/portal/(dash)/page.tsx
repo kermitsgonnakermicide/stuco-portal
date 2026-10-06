@@ -1,6 +1,6 @@
 // Staff dashboard: every event (including drafts) with registration
 // counts, plus quick links. Data comes straight from Prisma in this
-// server component — no client-side fetching, no public API round-trip.
+// server component - no client-side fetching, no public API round-trip.
 import { prisma } from "@/lib/db";
 import { requireStaffPage } from "@/lib/portal";
 import Link from "next/link";
@@ -92,7 +92,7 @@ export default async function PortalHomePage() {
             {events.length === 0 && (
               <tr>
                 <td colSpan={5} className="px-4 py-10 text-center text-gray-500">
-                  No events yet — <Link href="/portal/events/new" className="text-blue-700 underline">create the first one</Link>.
+                  No events yet - <Link href="/portal/events/new" className="text-blue-700 underline">create the first one</Link>.
                 </td>
               </tr>
             )}

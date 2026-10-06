@@ -1,4 +1,4 @@
-# Shiv Nadar School Gurgaon — Events Portal
+# Shiv Nadar School Gurgaon - Events Portal
 
 Reference implementation of the security-critical paths of a school
 events portal: session auth (argon2id + server-side sessions), CSRF,
@@ -33,7 +33,7 @@ docker-compose logs web | grep -A2 "Seed admin"
 Log in at `/portal/login`, then rotate that password.
 
 To override demo secrets, copy `.env.docker.example` to `.env`
-(next to `docker-compose.yml`) and fill in real values — compose reads it
+(next to `docker-compose.yml`) and fill in real values - compose reads it
 automatically. Demo defaults are for laptops only.
 
 ## Run without Docker
@@ -86,19 +86,19 @@ first-run seeding run in the deploy's `preDeployCommand`.
 **Steps**
 
 1. Push this repo to GitHub/GitLab.
-2. In Render: **New → Blueprint** → connect the repo. Render creates the
+2. In Render: **New -> Blueprint** -> connect the repo. Render creates the
    two databases and the web service.
 3. In the web service's **Environment** tab, set the secrets (marked
    `sync: false` in `render.yaml`). Generate with
    `openssl rand -base64 32`:
-   - `AUDIT_IP_PEPPER`  (required — audit IP hashing)
-   - `CSRF_PUBLIC_SECRET` (required — public registration form)
-   - `NEXT_PUBLIC_SITE_URL` → your `https://…onrender.com` URL
+   - `AUDIT_IP_PEPPER`  (required - audit IP hashing)
+   - `CSRF_PUBLIC_SECRET` (required - public registration form)
+   - `NEXT_PUBLIC_SITE_URL` -> your `https://...onrender.com` URL
    - `SEED_ADMIN_EMAIL` (optional; which email owns the first admin)
    - `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` / `S3_MEDIA_BUCKET`
      (only if you use media uploads)
 4. **Deploy.** The app refuses to boot in production without the two
-   required secrets (`CSRF_PUBLIC_SECRET`, `AUDIT_IP_PEPPER`) — a
+   required secrets (`CSRF_PUBLIC_SECRET`, `AUDIT_IP_PEPPER`) - a
    deliberate fail-fast so a misconfigured deployment can't silently
    ship with forgeable form tokens or unpeppered audit IPs.
 

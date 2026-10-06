@@ -7,7 +7,7 @@ import { sanitizeEventDescription } from "@/lib/sanitize";
 import { verifyCsrfToken } from "@/lib/csrf";
 import { logAudit } from "@/lib/audit";
 
-// Next.js 15: dynamic route params are a Promise — must be awaited.
+// Next.js 15: dynamic route params are a Promise - must be awaited.
 export async function PATCH(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await ctx.params;
@@ -52,7 +52,7 @@ export async function PATCH(req: NextRequest, ctx: { params: Promise<{ id: strin
   }
 }
 
-// Next.js 15: dynamic route params are a Promise — must be awaited.
+// Next.js 15: dynamic route params are a Promise - must be awaited.
 export async function DELETE(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await ctx.params;
